@@ -21,15 +21,12 @@ const App = () => {
 const AppStyled = styled.div`
   min-height: 100vh;
   background-color: slateblue;
-  background-repeat: no-repeat;
-  background-size: cover;
   position: relative;
 
   .grid {
     position: absolute;
     width: 100%;
     height: 100%;
-    background-repeat: repeat;
     z-index: 0;
   }
 `;
