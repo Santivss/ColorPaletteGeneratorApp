@@ -1,8 +1,19 @@
-# React + Vite
+# Proyecto React creado con Vite
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Este proyecto fue creado con Vite, utilicé varias librerias pero principalmente la finalidad de este proyecto es probar y testear react-styled-components que es una librería popular utilizada para la estilización de componentes.
 
-Currently, two official plugins are available:
+## Scripts Disponibles
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+En el directorio del proyecto, puedes ejecutar los siguientes comandos:
+
+- `npm run dev`: Ejecuta la aplicación en modo de desarrollo. Abre [http://localhost:5173](http://localhost:5173) para verla en tu navegador.
+
+- `npm run build`: Construye la aplicación para producción en la carpeta "dist".
+
+## Deploy:
+
+El proyecto está desplegado en un servicio gratuito llamado Netlify.
+
+#### Link a la app : https://fascinating-gaufre-19b52e.netlify.app/
+
+#### Netlify: https://www.netlify.com/
