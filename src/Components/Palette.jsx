@@ -1,26 +1,43 @@
+import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import styled from "styled-components";
 import { palette } from "../myPalettes";
-import { useState } from "react";
 import { SketchPicker } from "react-color";
 
 const del = <i className="fa-sharp fa-solid fa-trash"></i>;
 const brush = <i className="fa-solid fa-brush"></i>;
 const paletteIcon = <i className="fa-solid fa-palette"></i>;
 
-const Palette = () => {
+function Palette() {
   const { id } = useParams();
-
   const initialPalette = palette.find((pal) => pal.name === id);
 
   //state
-  const [myPalette, setMyPalette] = useState(initialPalette);
-  const [toRgb, setToRgb] = useState(`hex`);
+  const [myPalette, setMyPalette] = useState(() => {
+    const savedPalette = localStorage.getItem(`myPalette-${id}`);
+    return savedPalette ? JSON.parse(savedPalette) : initialPalette;
+  });
+
+  const [toRgb, setToRgb] = useState("hex");
   const [toggleColorPicker, setToggleColorPicker] = useState(false);
   const [colorPickerColor, setColorPickerColor] = useState("#fff");
   const [currentColor, setCurrentColor] = useState("");
 
-  const togleToRgb = (e) => {
+  //random texts
+  const copyTexts = [
+    "Pegar en google!",
+    "Color Copiado!",
+    "Ya fue copiado!",
+    "Ok!",
+    "Buena elección!",
+  ];
+
+  //send to localStorage
+  useEffect(() => {
+    localStorage.setItem(`myPalette-${id}`, JSON.stringify(myPalette));
+  }, [myPalette]);
+
+  const toggleToRgb = (e) => {
     if (e.target.value === "rgb") {
       setToRgb("rgb");
     } else {
@@ -28,16 +45,16 @@ const Palette = () => {
     }
   };
 
-  const convertToRgb = (hex) => {
+  const convertToRGB = (hex) => {
     hex = hex.replace("#", "");
     const r = parseInt(hex.substring(0, 2), 16);
     const g = parseInt(hex.substring(2, 4), 16);
     const b = parseInt(hex.substring(4, 6), 16);
 
-    return `rgb(${r},${g}, ${b})`;
+    return `rgb(${r}, ${g}, ${b})`;
   };
 
-  const handlerColorChange = (color) => {
+  const handleColorChange = (color) => {
     setColorPickerColor(color.hex);
   };
 
@@ -48,7 +65,22 @@ const Palette = () => {
     }, 1300);
   };
 
-  const createColor = () => {};
+  const createColor = () => {
+    if (!colorPickerColor) return;
+
+    const newColors = [...myPalette.colors];
+    if (newColors.length < 20) {
+      newColors.push(colorPickerColor);
+      setMyPalette({ ...myPalette, colors: newColors });
+    } else {
+      alert("You can only add 20 colors to a palette");
+    }
+  };
+
+  const handleCopyToClipboard = (e) => {
+    const text = e.target.innerText;
+    navigator.clipboard.writeText(text);
+  };
 
   const deleteColor = (index) => {
     const newColors = [...myPalette.colors];
@@ -60,39 +92,40 @@ const Palette = () => {
     setMyPalette({ ...myPalette, colors: [] });
   };
 
+  const generateRandomText = () => {
+    return copyTexts[Math.floor(Math.random() * copyTexts.length)];
+  };
+
   return (
     <PaletteStyled>
       <div className="header-items">
-        <div className="link-cont">
+        <div className="link-con">
           <Link to={"/"}>&larr;&nbsp; Back</Link>
         </div>
-        <div className="selected-type">
-          <select value={toRgb} onChange={togleToRgb}>
+        <div className="select-type">
+          <select value={toRgb} onChange={toggleToRgb}>
             <option value="hex">HEX</option>
             <option value="rgb">RGB</option>
           </select>
         </div>
         <div className="right">
           <button
-            onClick={() => {
-              setToggleColorPicker(!toggleColorPicker);
-            }}
+            onClick={() => setToggleColorPicker(!toggleColorPicker)}
             className="btn-icon"
           >
             {paletteIcon}
           </button>
-
           <button className="btn-icon" onClick={clear}>
             {brush}
           </button>
         </div>
       </div>
       {toggleColorPicker && (
-        <div className="color-picker-cont">
+        <div className="color-picker-con">
           <div className="color-picker">
             <SketchPicker
               color={colorPickerColor}
-              onChange={handlerColorChange}
+              onChange={handleColorChange}
               width="400px"
             />
             <button
@@ -101,14 +134,11 @@ const Palette = () => {
                 createColor();
               }}
             >
-              <i className="fa-solid fa-plus"> Add</i>
+              <i className="fa-solid fa-plus"></i> Add
             </button>
           </div>
-
           <div
-            onClick={() => {
-              setToggleColorPicker(!toggleColorPicker);
-            }}
+            onClick={() => setToggleColorPicker(!toggleColorPicker)}
             className="color-picker-overlay"
           ></div>
         </div>
@@ -118,13 +148,14 @@ const Palette = () => {
           return (
             <div
               key={index}
-              className="full-color"
               style={{ background: color }}
+              className="full-color"
               onClick={(e) => {
+                handleCopyToClipboard(e);
                 handleFullColorClick(e.target.style.backgroundColor);
               }}
             >
-              <h4>{toRgb === "hex" ? color : convertToRgb(color)}</h4>
+              <h4>{toRgb === "hex" ? color : convertToRGB(color)}</h4>
               <button
                 className="btn-icon"
                 onClick={() => {
@@ -143,13 +174,13 @@ const Palette = () => {
           style={{ backgroundColor: currentColor }}
         >
           <div className="text">
-            <h3>Random</h3>
+            <h3>{generateRandomText()}</h3>
           </div>
         </div>
       )}
     </PaletteStyled>
   );
-};
+}
 
 const PaletteStyled = styled.div`
   position: relative;
@@ -160,19 +191,19 @@ const PaletteStyled = styled.div`
     cursor: pointer;
     font-size: 1.5rem;
     border: none;
+    outline: none;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 0.5rem 1rem;
     border-radius: 7px;
     color: white;
-    background-color: #a855f7;
+    background: #a855f7;
     transition: all 0.3s ease-in-out;
     &:hover {
-      background-color: #0d0b33;
+      background: #0d0b33;
     }
   }
-
   .header-items {
     height: 6vh;
     display: flex;
@@ -181,7 +212,7 @@ const PaletteStyled = styled.div`
     padding: 0 2rem;
     background-color: #fff;
 
-    .link-cont {
+    .link-con {
       a {
         text-decoration: none;
         font-family: inherit;
@@ -191,7 +222,6 @@ const PaletteStyled = styled.div`
         width: 50%;
       }
     }
-
     select {
       font-family: inherit;
       font-size: inherit;
@@ -201,10 +231,10 @@ const PaletteStyled = styled.div`
       border-radius: 5px;
       outline: none;
       color: #fff;
+
       background-color: #000;
       cursor: pointer;
     }
-
     .right {
       display: flex;
       align-items: center;
@@ -214,7 +244,6 @@ const PaletteStyled = styled.div`
       }
     }
   }
-
   .current-color {
     position: fixed;
     top: 0;
@@ -235,30 +264,35 @@ const PaletteStyled = styled.div`
       justify-content: center;
       align-items: center;
       box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.09);
+      h3 {
+        text-align: center;
+        font-size: 5rem;
+        color: white;
+        font-weight: 700;
+        text-transform: uppercase;
+        text-shadow: 3px 5px 7px rgba(0, 0, 0, 0.1);
+      }
     }
-
     @keyframes show {
       0% {
         transform: scale(0);
         opacity: 0;
       }
-
       100% {
         transform: scale(1);
         opacity: 1;
       }
     }
   }
-
   .colors {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
     width: 100%;
-    height: 94vh;
+    min-height: 94vh;
     .full-color {
       cursor: pointer;
       display: flex;
-      align-content: center;
+      align-items: center;
       justify-content: center;
       position: relative;
       h4 {
@@ -272,7 +306,7 @@ const PaletteStyled = styled.div`
       button {
         position: absolute;
         right: 0;
-        bottom: 0;
+        bottom: 0px;
         border-bottom-left-radius: 0;
         border-top-right-radius: 0;
         border-bottom-right-radius: 0;
@@ -285,11 +319,10 @@ const PaletteStyled = styled.div`
     }
   }
 
-  .color-picker-cont {
+  .color-picker-con {
     .sketch-picker {
-      box-shadow: 3px 3px 15px rgba(0, 0, 0, 0.5);
+      box-shadow: 3px 3px 15px rgba(0, 0, 0, 0.5) !important;
     }
-
     .color-picker {
       position: fixed;
       top: 50%;
