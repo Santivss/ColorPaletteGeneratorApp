@@ -1,6 +1,6 @@
-# Proyecto React creado con Vite
+# Generador de paleta de colores
 
-Este proyecto fue creado con Vite, utilicé varias librerias pero principalmente la finalidad de este proyecto es probar y testear react-styled-components que es una librería popular utilizada para la estilización de componentes.
+Este es un simple proyecto creado con Vite, utilicé varias librerias pero principalmente la finalidad de este proyecto es probar y testear react-styled-components que es una librería popular utilizada para la estilización de componentes.
 
 ## Scripts Disponibles
 
@@ -12,7 +12,7 @@ En el directorio del proyecto, puedes ejecutar los siguientes comandos:
 
 ## Deploy:
 
-El proyecto está desplegado en un servicio gratuito llamado Netlify.
+El proyecto está desplegado en Netlify.
 
 #### Link a la app : https://fascinating-gaufre-19b52e.netlify.app/
 
